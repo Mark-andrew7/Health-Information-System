@@ -8,4 +8,6 @@ const clientSchema = new mongoose.Schema({
     contact: { type: String, required: true }
 });
 
+clientSchema.index({ firstName: 'text', lastName: 'text' });
+
 module.exports = mongoose.model('Client', clientSchema);

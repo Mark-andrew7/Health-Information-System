@@ -1,0 +1,132 @@
+openapi: 3.0.3
+  info:
+    title: Health Information System API
+    version: 1.0.0
+    description: API for managing health programs, clients, and enrollments
+  servers:
+    - url: http://localhost:5000/api
+  components:
+    securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+    schemas:
+      Client:
+        type: object
+        required: [firstName, lastName, dateOfBirth, gender, contact]
+        properties:
+          firstName: { type: string }
+          lastName: { type: string }
+          dateOfBirth: { type: string, format: date }
+          gender: { type: string, enum: [Male, Female, Other] }
+          contact: { type: string }
+      HealthProgram:
+        type: object
+        required: [name]
+        properties:
+          name: { type: string }
+          description: { type: string }
+      Enrollment:
+        type: object
+        required: [clientId, programId]
+        properties:
+          clientId: { type: string }
+          programId: { type: string }
+          enrolledAt: { type: string, format: date-time }
+  paths:
+    /clients:
+      post:
+        summary: Register a new client
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Client' }
+        responses:
+          '201': { description: Client created }
+          '400': { description: Bad request }
+    /clients/search:
+      get:
+        summary: Search clients by name or ID
+        security: [{ bearerAuth: [] }]
+        parameters:
+          - in: query
+            name: query
+            schema: { type: string }
+            description: Search term (name or ID)
+          - in: query
+            name: page
+            schema: { type: integer, default: 1 }
+          - in: query
+            name: limit
+            schema: { type: integer, default: 10 }
+        responses:
+          '200': { description: List of clients }
+          '400': { description: Bad request }
+    /clients/{id}:
+      get:
+        summary: Get client profile
+        security: [{ bearerAuth: [] }]
+        parameters:
+          - in: path
+            name: id
+            required: true
+            schema: { type: string }
+        responses:
+          '200': { description: Client profile with enrollments }
+          '400': { description: Bad request }
+          '404': { description: Client not found }
+    /programs:
+      post:
+        summary: Create a health program
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthProgram' }
+        responses:
+          '201': { description: Program created }
+          '400': { description: Bad request }
+    /enrollments:
+      post:
+        summary: Enroll a client in a program
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Enrollment' }
+        responses:
+          '201': { description: Enrollment created }
+          '400': { description: Bad request }
+    /auth/register:
+      post:
+        summary: Register a new user
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username: { type: string }
+                  password: { type: string }
+                  role: { type: string, enum: [admin, user] }
+        responses:
+          '201': { description: User registered }
+          '400': { description: Bad request }
+    /auth/login:
+      post:
+        summary: Login a user
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username: { type: string }
+                  password: { type: string }
+        responses:
+          '200': { description: Login successful, returns token }
+          '401': { description: Invalid credentials }

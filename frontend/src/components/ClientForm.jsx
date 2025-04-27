@@ -1,5 +1,6 @@
-import { useState } from 'react';
-  import axios from 'axios';
+import { useState, useContext } from 'react';
+  import api, { setAuthToken } from '../utils/api';
+  import { AuthContext } from '../context/AuthContext';
 
   function ClientForm() {
     const [formData, setFormData] = useState({
@@ -10,11 +11,13 @@ import { useState } from 'react';
       contact: ''
     });
     const [message, setMessage] = useState('');
+    const { token } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        await axios.post('http://localhost:5000/api/clients', formData);
+        setAuthToken(token);
+        await api.post('/clients', formData);
         setMessage('Client registered successfully!');
         setFormData({ firstName: '', lastName: '', dateOfBirth: '', gender: '', contact: '' });
       } catch (err) {

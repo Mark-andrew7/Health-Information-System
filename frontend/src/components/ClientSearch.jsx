@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
   import { Link } from 'react-router-dom';
-  import axios from 'axios';
+  import api, { setAuthToken } from '../utils/api';
   import { AuthContext } from '../context/AuthContext';
 
   function ClientSearch() {
@@ -12,9 +12,8 @@ import { useState, useContext } from 'react';
     const handleSearch = async (e) => {
       e.preventDefault();
       try {
-        const res = await axios.get(`http://localhost:5000/api/clients/search?query=${query}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        setAuthToken(token);
+        const res = await api.get(`/clients/search?query=${query}`);
         setClients(res.data.clients);
         setError('');
       } catch (err) {

@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react';
-  import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
+  import api, { setAuthToken } from '../utils/api';
+  import { AuthContext } from '../context/AuthContext';
 
   function EnrollmentForm() {
     const [clients, setClients] = useState([]);
     const [programs, setPrograms] = useState([]);
     const [formData, setFormData] = useState({ clientId: '', programId: '' });
     const [message, setMessage] = useState('');
+    const { token } = useContext(AuthContext);
 
     useEffect(() => {
-      // Fetch clients and programs
       const fetchData = async () => {
         try {
+          setAuthToken(token);
           const [clientRes, programRes] = await Promise.all([
-            axios.get('http://localhost:5000/api/clients/search'),
-            axios.get('http://localhost:5000/api/programs')
+            api.get('/clients/search'),
+            api.get('/programs')
           ]);
           setClients(clientRes.data.clients);
           setPrograms(programRes.data);
@@ -22,12 +24,13 @@ import { useState, useEffect } from 'react';
         }
       };
       fetchData();
-    }, []);
+    }, [token]);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        await axios.post('http://localhost:5000/api/enrollments', formData);
+        setAuthToken(token);
+        await api.post('/enrollments', formData);
         setMessage('Enrollment successful!');
         setFormData({ clientId: '', programId: '' });
       } catch (err) {

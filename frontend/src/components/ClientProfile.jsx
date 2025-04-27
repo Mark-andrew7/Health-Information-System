@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
   import { useParams } from 'react-router-dom';
-  import axios from 'axios';
+  import api, { setAuthToken } from '../utils/api';
   import { AuthContext } from '../context/AuthContext';
 
   function ClientProfile() {
@@ -13,9 +13,8 @@ import { useState, useEffect, useContext } from 'react';
     useEffect(() => {
       const fetchProfile = async () => {
         try {
-          const res = await axios.get(`http://localhost:5000/api/clients/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          setAuthToken(token);
+          const res = await api.get(`/clients/${id}`);
           setClient(res.data.client);
           setEnrollments(res.data.enrollments);
         } catch (err) {

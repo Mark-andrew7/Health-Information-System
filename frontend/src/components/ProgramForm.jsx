@@ -1,15 +1,18 @@
-import { useState } from 'react';
-  import axios from 'axios';
+import { useState, useContext } from 'react';
+  import api, { setAuthToken } from '../utils/api';
+  import { AuthContext } from '../context/AuthContext';
 
   function ProgramForm() {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [message, setMessage] = useState('');
+    const { token } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        await axios.post('http://localhost:5000/api/programs', { name, description });
+        setAuthToken(token);
+        await api.post('/programs', { name, description });
         setMessage('Program created successfully!');
         setName('');
         setDescription('');

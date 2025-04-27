@@ -8,7 +8,7 @@ const enrollmentRoutes = require('./routes/enrollmentRoutes');
 const authRoutes = require('./routes/authRoutes');
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('yamljs');
-const swaggerDocument = yaml.load('./swagger.yaml');
+// const swaggerDocument = yaml.load('./swagger.yaml');
 
 dotenv.config({ path: '../.env' });
 const app = express();
@@ -21,7 +21,7 @@ app.use(cors());
 app.use('/api', healthRoutes);
 app.use('/api', clientRoutes);
 app.use('/api', enrollmentRoutes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/auth', authRoutes);
 
 
